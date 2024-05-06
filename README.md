@@ -10,3 +10,16 @@ Historial de Mensajes: Los usuarios pueden ver el historial de mensajes en cada 
 Node.js: Plataforma de desarrollo de aplicaciones en JavaScript para el servidor.
 MySQL: Sistema de gestión de bases de datos relacional utilizado para almacenar los mensajes y la información de los usuarios.
 Prisma: ORM (Object-Relational Mapping) utilizado para interactuar con la base de datos MySQL de manera sencilla desde Node.js.	
+## Instalación
+Iniciar el contenedor de docker.
+```bash
+docker compose up
+```
+Ingresar a la terminal del contenedor.
+```bash
+docker exec -it chat-service-app-1 sh
+```
+Realizar migración con prisma.
+```javascript
+npx prisma migrate dev --name init
+```

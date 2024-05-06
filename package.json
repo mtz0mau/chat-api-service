@@ -8,11 +8,17 @@
     "start": "node src/app.js"
   },
   "dependencies": {
-    "prisma": "5.13.0",
-    "express": "^4.19.2",
-    "dotenv": "16.4.5"
+    "@prisma/client": "^5.13.0",
+    "dotenv": "16.4.5",
+    "express": "^4.19.2"
   },
   "engines": {
     "node": ">=18.17"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.8",
+    "prisma": "^5.13.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
   }
 }

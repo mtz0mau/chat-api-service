@@ -2,6 +2,19 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "3004:3004"
     volumes:
       - .:/app
+    links:
+      - mysql
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: chatservice
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+volumes:
+  mysqldata:

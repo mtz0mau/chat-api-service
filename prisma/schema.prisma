@@ -27,7 +27,8 @@ model User {
   name String @db.VarChar(255)
   picture_url String? @db.VarChar(255)
   phone_number String? @db.VarChar(10)
-  email String? @db.VarChar(255)
+  email String @db.VarChar(255) @unique
+  password String @db.VarChar(255)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   app App @relation(fields: [app_uuid], references: [uuid])

@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { CORS_ORIGINS, PORT } from './config/server.js';
-import { appRoutes, messageRoutes, userRoutes } from './routes/routes.js';
+import { appRoutes, authRoutes, messageRoutes, userRoutes } from './routes/routes.js';
 
 const app = express();
 const corsOptions = {
@@ -10,6 +10,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/apps', appRoutes);
 app.use('/api/messages', messageRoutes);

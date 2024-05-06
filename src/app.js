@@ -1,45 +1,19 @@
 import express from 'express';
-import { PORT } from './config/server.js';
-import prisma from "./database/prisma.js";
+import cors from 'cors';
+import { CORS_ORIGINS, PORT } from './config/server.js';
+import { appRoutes, userRoutes } from './routes/routes.js';
 
 const app = express();
+const corsOptions = {
+  origin: CORS_ORIGINS.split(','),
+};
+app.use(cors(corsOptions));
+app.use(express.json());
 
-app.get('/', async (req, res) => {
-  const count = await prisma.user.count();
-
-  if (count === 0) {
-    await prisma.user.create({
-      data: {
-        name: 'Alice',
-        app: {
-          create: {
-            name: 'My App',
-          }
-        },
-        role: {
-          create: {
-            name: 'ADMIN',
-            permissions: {
-              create: [
-                {
-                  name: 'create'
-                }
-              ]
-            }
-          }
-        }
-      }
-    })
-  }
-
-  const users = await prisma.user.findMany();
-  const roles = await prisma.role.findMany();
-
-  res.json({
-    count,
-    users,
-    roles
-  });
+app.use('/api/users', userRoutes);
+app.use('/api/apps', appRoutes);
+app.use('*', (req, res) => {
+  res.status(404).json({ error: 'Route not found' });
 });
 
 app.listen(PORT, () => {

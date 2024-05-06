@@ -9,5 +9,7 @@ yarn-error.log
 /prisma/.prisma
 /prisma/migrations/
 
+.DS_Store
+
 # MySQL
 *.sql

@@ -55,7 +55,6 @@ export const getUser = async (req, res) => {
   if (!token) {
     return res.status(401).json({ error: 'Token is required' });
   }
-  console.log(token)
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET_KEY);

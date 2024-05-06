@@ -24,11 +24,12 @@ model App {
 
 model User {
   uuid String @id @default(uuid())
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
   name String @db.VarChar(255)
   picture_url String? @db.VarChar(255)
   phone_number String? @db.VarChar(10)
+  email String? @db.VarChar(255)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
   app App @relation(fields: [app_uuid], references: [uuid])
   app_uuid String
   role Role @relation(fields: [role_uuid], references: [uuid])
@@ -39,26 +40,26 @@ model User {
 
 model Role {
   uuid String @id @default(uuid())
+  name String @db.VarChar(255)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-  name String @db.VarChar(255)
   users User[]
   permissions Permission[]
 }
 
 model Permission {
   uuid String @id @default(uuid())
+  name String @db.VarChar(255)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-  name String @db.VarChar(255)
   roles Role[]
 }
 
 model Chat {
   uuid String @id @default(uuid())
+  type String @db.VarChar(255) // private, group, channel
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-  type String @db.VarChar(255) // private, group, channel
   app App @relation(fields: [app_uuid], references: [uuid])
   app_uuid String
   userChats UserChat[]
@@ -77,10 +78,10 @@ model UserChat {
 
 model Message {
   uuid String @id @default(uuid())
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
   content String @db.Text
   type String @db.VarChar(255) // text, image, video, audio, file
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
   chat Chat @relation(fields: [chat_uuid], references: [uuid])
   chat_uuid String
   user User @relation(fields: [user_uuid], references: [uuid])

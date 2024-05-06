@@ -2,7 +2,7 @@ services:
   app:
     build: .
     ports:
-      - "3004:3004"
+      - "3000:3000"
     volumes:
       - .:/app
     links:

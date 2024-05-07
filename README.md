@@ -15,11 +15,3 @@ Iniciar el contenedor de docker.
 ```bash
 docker compose up
 ```
-Ingresar a la terminal del contenedor.
-```bash
-docker exec -it chat-service-app-1 sh
-```
-Realizar migración con prisma.
-```javascript
-npx prisma migrate dev --name init
-```

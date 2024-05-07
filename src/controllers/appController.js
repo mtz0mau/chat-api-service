@@ -16,11 +16,12 @@ export const createApp = async (req, res) => {
     return res.status(400).json({ error: errors.array() });
   }
 
-  const { name } = req.body;
+  const { name, urls } = req.body;
   try {
     const app = await prisma.app.create({
       data: {
         name,
+        urls
       },
     });
     res.status(201).json(app);
@@ -64,4 +65,5 @@ export const updateApp = async (req, res) => {
 
 export const validateApp = [
   check('name').isString().isLength({ min: 3 }),
+  check('urls').isString().isLength({ min: 3 }),
 ];

@@ -1,5 +1,6 @@
 import { check, validationResult } from "express-validator";
 import prisma from "../database/prisma.js";
+import { getIo } from "../socket/socket.js";
 
 export const createPrivateChat = async (req, res) => {
   const errors = validationResult(req);
@@ -20,6 +21,7 @@ export const createPrivateChat = async (req, res) => {
     const receiverExists = await prisma.user.findUnique({
       where: {
         uuid: receiver_uuid,
+        app: { uuid: app_uuid }
       },
     });
     if (!receiverExists) return res.status(404).json({ error: "Receiver not found" });
@@ -78,6 +80,10 @@ export const createPrivateChat = async (req, res) => {
         }
       },
     });
+
+    // Emit an event to the chat room
+    getIo().to(chat.uuid).emit('chatCreated', chat);
+
     res.status(201).json(chat);
   } catch (error) {
     console.log(error)

@@ -8,4 +8,9 @@ if [ ! -d "node_modules" ]; then
   npm install
 fi
 
+# wait 5 seconds
+sleep 5
+
+npx prisma migrate dev --name init
+
 npm run start

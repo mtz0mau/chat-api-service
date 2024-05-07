@@ -2,10 +2,10 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "3004:3004"
     volumes:
       - .:/app
-    links:
+    depends_on:
       - mysql
   mysql:
     image: mysql:8.0

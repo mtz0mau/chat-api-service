@@ -9,6 +9,7 @@ async function main() {
   const app = await prisma.app.create({
     data: {
       name: "My App",
+      urls: "http://localhost:3000,http://localhost:3001"
     }
   });
 

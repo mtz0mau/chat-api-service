@@ -16,6 +16,7 @@ datasource db {
 model App {
   uuid String @id @default(uuid())
   name String @db.VarChar(255)
+  urls String @db.VarChar(255)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   users User[]

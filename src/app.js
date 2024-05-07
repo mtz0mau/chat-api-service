@@ -1,9 +1,13 @@
 import express from 'express';
+import http from 'http';
 import cors from 'cors';
-import { CORS_ORIGINS, PORT } from './config/server.js';
+import { configureSocket } from './socket/socket.js';
+import { CORS_ORIGINS, PORT, updateAllowedDomains } from './config/server.js';
 import { appRoutes, authRoutes, chatRoutes, messageRoutes, profileRoutes, userRoutes } from './routes/routes.js';
 
 const app = express();
+const server = http.createServer(app);
+
 const corsOptions = {
   origin: CORS_ORIGINS.split(','),
 };
@@ -20,6 +24,13 @@ app.use('*', (req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+(async () => {
+  await updateAllowedDomains();
+
+  console.log('Configurando socket...')
+  await configureSocket(server);
+
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+})();

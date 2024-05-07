@@ -10,6 +10,6 @@ COPY . .
 COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
-EXPOSE 3000
+EXPOSE 3004
 
 CMD ["/usr/local/bin/start.sh"]

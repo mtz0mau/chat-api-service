@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { CORS_ORIGINS, PORT } from './config/server.js';
-import { appRoutes, authRoutes, messageRoutes, userRoutes } from './routes/routes.js';
+import { appRoutes, authRoutes, chatRoutes, messageRoutes, profileRoutes, userRoutes } from './routes/routes.js';
 
 const app = express();
 const corsOptions = {
@@ -14,6 +14,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/apps', appRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/chats', chatRoutes);
 app.use('*', (req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });

@@ -2,7 +2,7 @@ import { JWT_SECRET_KEY } from "../config/jwt.js";
 import prisma from "../database/prisma.js";
 import jwt from "jsonwebtoken";
 
-export const validateToken = (req, res, next) => {
+export const validateToken = async (req, res, next) => {
   // validate Bearer token
   const raw_token = req.headers.authorization;
   if (!raw_token) return res.status(403).json({ error: "Access denied" });
@@ -19,13 +19,15 @@ export const validateToken = (req, res, next) => {
     const decoded = jwt.verify(token, JWT_SECRET_KEY);
 
     // validate if user exists
-    const user = prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         uuid: decoded.uuid,
       },
     });
 
     if (!user) return res.status(404).json({ error: "User not found" });
+
+    req.user = user;
   } catch (error) {
     return res.status(403).json({ error: "Access denied. Invalid token." });
   }

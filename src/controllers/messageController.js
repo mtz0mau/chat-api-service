@@ -20,8 +20,34 @@ export const sendPrivateMessage = async (req, res) => {
   const { content, type, chat_uuid } = req.body;
 
   try {
-    // response
-    res.status(201).json({ message: "Message sent successfully", chat });
+    // comprobate if chat exists
+    const chat = await prisma.chat.findUnique({
+      where: {
+        uuid: chat_uuid,
+      },
+    });
+    if (!chat || chat.type !== 'private') return res.status(404).json({ error: "Chat not found" });
+
+    // comprobate if user is part of the chat
+    const chatUser = await prisma.userChat.findFirst({
+      where: {
+        chat: { uuid: chat_uuid },
+        user: { uuid: user.uuid },
+      },
+    });
+    if (!chatUser) return res.status(404).json({ error: "Chat not found" });
+
+    // create message
+    const message = await prisma.message.create({
+      data: {
+        content,
+        type,
+        chat: { connect: { uuid: chat_uuid } },
+        user: { connect: { uuid: user.uuid } }
+      },
+    });
+
+    res.status(201).json(message);
   } catch (error) {
     res.status(500).json({ error: "An error occurred while trying to send the message" });
   }
@@ -30,5 +56,5 @@ export const sendPrivateMessage = async (req, res) => {
 export const validateSendPrivate = [
   check('content').isString().notEmpty().withMessage('Content is required'),
   check('type').isString().notEmpty().withMessage('Type is required'),
-  check('receiver_uuid').isString().notEmpty().withMessage('Receiver UUID is required'),
+  check('chat_uuid').isString().notEmpty().withMessage('Chat UUID is required'),
 ];

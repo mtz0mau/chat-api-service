@@ -105,7 +105,60 @@ export const getChats = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "An error occurred while trying to get the chats" });
   }
-}
+};
+
+export const getMessages = async (req, res) => {
+  const { uuid: chat_uuid } = req.params;
+  const { uuid: user_uuid } = req.user;
+
+  // compronate if chat_uuid is a valid uuid
+  if (!chat_uuid) return res.status(400).json({ error: "Chat UUID is required" });
+
+  try {
+    // comprobate if chat exists
+    const chat = await prisma.chat.findUnique({
+      where: {
+        uuid: chat_uuid,
+      },
+    });
+    if (!chat) return res.status(404).json({ error: "Chat not found" });
+
+    // comprobate if user is part of the chat
+    const chatUser = await prisma.userChat.findFirst({
+      where: {
+        chat: { uuid: chat_uuid },
+        user: { uuid: user_uuid },
+      },
+    });
+    if (!chatUser) return res.status(404).json({ error: "Chat not found" });
+
+    // get messages order by created_at
+    const messages = await prisma.message.findMany({
+      where: {
+        chat: {
+          uuid: chat_uuid,
+          userChats: {
+            some: {
+              user: {
+                uuid: user_uuid,
+              },
+              chat: {
+                uuid: chat_uuid,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        created_at: 'asc',
+      },
+    });
+
+    res.status(200).json(messages);
+  } catch (error) {
+    res.status(500).json({ error: "An error occurred while trying to get the messages" });
+  }
+};
 
 export const validateCreatePrivate = [
   check("receiver_uuid").isString().notEmpty(),

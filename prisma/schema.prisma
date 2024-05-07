@@ -13,14 +13,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model root {
+  uuid String @id @default(uuid())
+  firstname String @db.VarChar(255)
+  lastname String @db.VarChar(255)
+  picture_url String? @db.VarChar(255)
+  email String @db.VarChar(255) @unique
+  password String @db.VarChar(255)
+  valid_email Boolean @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  apps App[]
+}
+
 model App {
   uuid String @id @default(uuid())
   name String @db.VarChar(255)
-  urls String @db.VarChar(255)
+  urls String? @db.VarChar(255)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   users User[]
   chats Chat[]
+  userRoot UserRoot @relation(fields: [user_root_uuid], references: [uuid])
+  user_root_uuid String
 }
 
 model User {
@@ -68,7 +83,6 @@ model Chat {
   messages Message[]
 }
 
-
 model UserChat {
   user User @relation(fields: [userUuid], references: [uuid])
   userUuid String
@@ -82,6 +96,7 @@ model Message {
   uuid String @id @default(uuid())
   content String @db.Text
   type String @db.VarChar(255) // text, image, video, audio, file
+  status String @db.VarChar(255) @default("sent") // sent, delivered, read, deleted
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   chat Chat @relation(fields: [chat_uuid], references: [uuid])

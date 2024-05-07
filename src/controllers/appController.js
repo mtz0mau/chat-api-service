@@ -11,6 +11,7 @@ export const getApps = async (req, res) => {
 };
 
 export const createApp = async (req, res) => {
+  // validate the request
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ error: errors.array() });

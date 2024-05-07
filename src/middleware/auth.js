@@ -2,12 +2,9 @@ import { JWT_SECRET_KEY } from "../config/jwt.js";
 import prisma from "../database/prisma.js";
 import jwt from "jsonwebtoken";
 
-export const validateToken = async (req, res, next) => {
+export const isAuth = async (req, res, next) => {
   // validate Bearer token
-  const raw_token = req.headers.authorization;
-  if (!raw_token) return res.status(403).json({ error: "Access denied" });
-
-  const token = raw_token.split(" ")[1];
+  const token = getToken(req);
 
   // comprobate if token not null
   if (!token) {
@@ -35,6 +32,18 @@ export const validateToken = async (req, res, next) => {
   next();
 };
 
+export const isRoot = async (req, res, next) => {
+  // validate Bearer token
+  const token = getToken(req);
+
+  // comprobate if token not null
+  if (!token) {
+    return res.status(403).json({ error: "Access denied" });
+  }
+
+  next();
+};
+
 export const validateApp = async (req, res, next) => {
   // get app_uuid in headers
   const app_uuid = req.headers.app_uuid;
@@ -52,4 +61,11 @@ export const validateApp = async (req, res, next) => {
   if (!app) return res.status(403).json({ error: "Access denied. App invalid." });
 
   next();
+};
+
+const getToken = (req) => {
+  // validate Bearer token
+  const raw_token = req.headers.authorization;
+  if (!raw_token) return;
+  return raw_token.split(" ")[1];
 };

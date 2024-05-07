@@ -2,8 +2,7 @@ import dotenv from 'dotenv';
 import prisma from '../database/prisma.js';
 dotenv.config();
 
-export const PORT = process.env.APP_PORT || 3004;
-export const CORS_ORIGINS = process.env.CORS_ORIGINS || 'http://localhost:3000';
+export const PORT = process.env.SERVER_PORT || 3004;
 
 export let corsOptions = {
   origin: [],

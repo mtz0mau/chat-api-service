@@ -1,11 +1,12 @@
 import express from "express";
-import { validateToken } from "../middleware/auth.js";
+import { isAuth } from "../middleware/auth.js";
 import { createPrivateChat, getChats, getMessages, validateCreatePrivate } from "../controllers/chatController.js";
 
 const router = express.Router();
 
-router.get("/private", validateToken, getChats);
-router.get("/:uuid/messages", validateToken, getMessages);
-router.post("/private", validateToken, validateCreatePrivate, createPrivateChat);
+// auth protected routes
+router.get("/private", isAuth, getChats);
+router.get("/:uuid/messages", isAuth, getMessages);
+router.post("/private", isAuth, validateCreatePrivate, createPrivateChat);
 
 export default router;

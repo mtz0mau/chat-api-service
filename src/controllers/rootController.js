@@ -1,5 +1,8 @@
-import { check } from "express-validator";
+import { check, validationResult } from "express-validator";
 import prisma from "../database/prisma.js";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { JWT_SECRET_KEY } from "../config/jwt.js";
 
 export const register = async (req, res) => {
   const errors = validationResult(req);
@@ -10,10 +13,10 @@ export const register = async (req, res) => {
   const { firstname, lastname, email, password } = req.body;
 
   try {
-    // comprobar que el email no esté en uso
+    // comprobate if email is already in use
     const userExists = await prisma.root.findUnique({
       where: {
-        email,
+        email: email.toLowerCase(),
       },
     });
 
@@ -24,27 +27,86 @@ export const register = async (req, res) => {
       data: {
         firstname,
         lastname,
-        email,
+        email: email.toLowerCase(),
         password: hashedPassword,
       },
     });
 
     const token = jwt.sign({ uuid: user.uuid }, JWT_SECRET_KEY, { expiresIn: '24h' });
+
+    // send email with token for validation email
+    await sendToken(user);
+
     res.json({
       token,
       user: {
         uuid: user.uuid,
         firstname: user.firstname,
         lastname: user.lastname,
-        picture_url: user.picture_url,
         email: user.email,
         valid_email: user.valid_email,
-      },
+      }
     });
   } catch (error) {
+    console.log(error)
     res.status(500).json({ error: "An error occurred while trying to register the user" });
   }
 };
+
+export const validateEmail = async (req, res) => {
+  // get token from url
+  const { token } = req.params;
+
+  // if token is not valid return error
+  if (!token) return res.status(400).json({ error: 'Invalid token' });
+
+  try {
+    // find user with token
+    const user = await prisma.root.findFirst({
+      where: {
+        email_token: token,
+      },
+    });
+
+    // if user not found return error
+    if (!user) return res.status(400).json({ error: 'Invalid token' });
+
+    // update user with valid email
+    await prisma.root.update({
+      where: {
+        uuid: user.uuid,
+      },
+      data: {
+        valid_email: true,
+        email_token: null,
+      },
+    });
+
+    res.json({ message: 'Email validated' });
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while trying to validate the email' }); 
+  }
+};
+
+const sendToken = async (root) => {
+  // send email with token for validation email
+
+  // generate token 20 characters
+  const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+  // save token in database
+  await prisma.root.update({
+    where: {
+      uuid: root.uuid,
+    },
+    data: {
+      email_token: token,
+    },
+  });
+
+  // send email
+  console.log(token);
+}
 
 export const validateRegister = [
   check('firstname').isString().isLength({ min: 3, max: 255 }),

@@ -4,6 +4,7 @@ import messageRoutes from './messageRoutes.js';
 import authRoutes from './authRoutes.js';
 import profileRoutes from './profileRoutes.js';
 import chatRoutes from './chatRoutes.js';
+import rootRoutes from './rootRoutes.js';
 
 export {
   appRoutes,
@@ -12,4 +13,5 @@ export {
   authRoutes,
   profileRoutes,
   chatRoutes,
+  rootRoutes,
 }

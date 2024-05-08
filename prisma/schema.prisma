@@ -13,7 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model root {
+model Root {
   uuid String @id @default(uuid())
   firstname String @db.VarChar(255)
   lastname String @db.VarChar(255)
@@ -21,6 +21,7 @@ model root {
   email String @db.VarChar(255) @unique
   password String @db.VarChar(255)
   valid_email Boolean @default(false)
+  email_token String? @db.VarChar(255)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   apps App[]
@@ -34,8 +35,8 @@ model App {
   updated_at DateTime @updatedAt
   users User[]
   chats Chat[]
-  userRoot UserRoot @relation(fields: [user_root_uuid], references: [uuid])
-  user_root_uuid String
+  root Root @relation(fields: [root_uuid], references: [uuid])
+  root_uuid String
 }
 
 model User {

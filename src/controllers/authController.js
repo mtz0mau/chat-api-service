@@ -14,7 +14,7 @@ export const register = async (req, res) => {
   const app_uuid = req.headers.app_uuid;
 
   try {
-    // comprobar que el email no esté en uso
+    // comprobate if email is already in use
     const userExists = await prisma.user.findUnique({
       where: {
         email,

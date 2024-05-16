@@ -1,12 +1,12 @@
 services:
-  app:
+  appchat:
     build: .
     ports:
       - "3004:3004"
     volumes:
       - .:/app
     depends_on:
-      - mysql
+      - mysqlchat
   mysqlchat:
     image: mysql:8.0
     environment:

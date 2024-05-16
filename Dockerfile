@@ -1,7 +1,7 @@
 FROM node:18.17
 
 # Update npm
-RUN npm install --location=global npm@10.7.0
+RUN npm install --location=global npm@latest
 
 WORKDIR /app
 

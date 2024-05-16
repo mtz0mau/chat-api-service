@@ -12,8 +12,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: chatservice
-    ports:
-      - "3307:3306"
     volumes:
       - mysqldata:/var/lib/mysql
 volumes:

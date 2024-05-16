@@ -1,4 +1,3 @@
-import { validationResult, check } from "express-validator";
 import prisma from "../database/prisma.js";
 
 export const getApp = async (req, res) => {

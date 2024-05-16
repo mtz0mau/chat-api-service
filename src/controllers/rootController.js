@@ -53,6 +53,45 @@ export const register = async (req, res) => {
   }
 };
 
+export const login = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ error: errors.array() });
+  }
+
+  const { email, password } = req.body;
+
+  try {
+    // comprobate if email exists
+    const user = await prisma.root.findUnique({
+      where: {
+        email: email.toLowerCase(),
+      },
+    });
+
+    if (!user) return res.status(400).json({ error: 'User not found' });
+
+    // comprobate if password is correct
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) return res.status(400).json({ error: 'Invalid credentials' });
+
+    const token = jwt.sign({ uuid: user.uuid }, JWT_SECRET_KEY, { expiresIn: '24h' });
+
+    res.json({
+      token,
+      user: {
+        uuid: user.uuid,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+        valid_email: user.valid_email,
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: "An error occurred while trying to login the user" });
+  }
+};
+
 export const validateEmail = async (req, res) => {
   // get token from url
   const { token } = req.params;
@@ -84,7 +123,7 @@ export const validateEmail = async (req, res) => {
 
     res.json({ message: 'Email validated' });
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred while trying to validate the email' }); 
+    res.status(500).json({ error: 'An error occurred while trying to validate the email' });
   }
 };
 
@@ -111,6 +150,11 @@ const sendToken = async (root) => {
 export const validateRegister = [
   check('firstname').isString().isLength({ min: 3, max: 255 }),
   check('lastname').isString().isLength({ min: 3, max: 255 }),
+  check('email').isEmail().isLength({ min: 3, max: 255 }),
+  check('password').isString().isLength({ min: 6, max: 255 }),
+];
+
+export const validateLogin = [
   check('email').isEmail().isLength({ min: 3, max: 255 }),
   check('password').isString().isLength({ min: 6, max: 255 }),
 ];

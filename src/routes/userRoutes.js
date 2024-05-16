@@ -1,14 +1,11 @@
 import express from "express";
-import { getUsers } from "../controllers/userController.js";
+import { createUser, searchUsers, validateCreate, validateSearch } from "../controllers/userController.js";
 import { isRoot } from "../middleware/auth.js";
 
 const router = express.Router();
 
 // root protected routes
-router.get("/", isRoot, getUsers);
-
-router.post("/", (req, res) => {
-  res.send("User route post");
-});
+router.post("/", isRoot, validateCreate, createUser);
+router.get("/search", validateSearch, searchUsers);
 
 export default router;

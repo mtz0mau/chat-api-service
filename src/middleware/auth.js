@@ -41,6 +41,29 @@ export const isRoot = async (req, res, next) => {
     return res.status(403).json({ error: "Access denied" });
   }
 
+  // comprobate decoded token
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET_KEY);
+
+    // validate if user exists
+    const root = await prisma.root.findUnique({
+      where: {
+        uuid: decoded.uuid,
+      },
+    });
+
+    if (!root) return res.status(404).json({ error: "Root not found" });
+
+    // comprobate if user valid_email is true
+    if (!root.valid_email) {
+      return res.status(403).json({ error: "Access denied. Email not validated." });
+    }
+
+    req.root = root;
+  } catch (error) {
+    return res.status(403).json({ error: "Access denied. Invalid token." });
+  }
+
   next();
 };
 

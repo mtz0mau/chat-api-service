@@ -61,16 +61,23 @@ export const login = async (req, res) => {
     return res.status(400).json({ error: errors.array() });
   }
 
-  const { email, password } = req.body;
-  const app_uuid = req.headers.app_uuid;
+  const { name, password } = req.body;
+  const { app_uuid } = req.headers;
+
+  console.log({
+    name,
+    password,
+    app_uuid
+  })
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: {
-        email,
+        name,
         app_uuid
-      },
+      }
     });
+    console.log(user)
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -88,6 +95,9 @@ export const login = async (req, res) => {
         uuid: user.uuid,
         name: user.name,
         email: user.email,
+        role_uuid: user.role_uuid,
+        phone_number: user.phone_number,
+        picture_url: user.picture_url,
       },
     });
   } catch (error) {
@@ -103,6 +113,6 @@ export const validateRegister = [
 ];
 
 export const validateLogin = [
-  check('email').isEmail().withMessage('Email is not valid'),
+  check('name').notEmpty().withMessage('Name is required'),
   check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
 ];
